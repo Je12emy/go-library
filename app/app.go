@@ -78,13 +78,14 @@ func GetDBClient() *gorm.DB {
 // GetTestDBClient Creates a connection with the test db.
 func GetTestDBClient() *gorm.DB {
 	// Conect to sqllite test db
-	db, err := gorm.Open(sqlite.Open("library_test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("../library_test.db"), &gorm.Config{})
 
 	if err != nil {
 		panic("failed to connect database")
 	}
 
 	// Migrate
+	db.Migrator().DropTable(&domain.Book{})
 	db.AutoMigrate(&domain.Book{})
 
 	return db

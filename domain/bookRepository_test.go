@@ -103,3 +103,17 @@ func Test_should_paginate_books(t *testing.T) {
 		t.Error("Failed while paginating results")
 	}
 }
+
+func Test_should_insert_a_new_book(t *testing.T) {
+	setup()
+	b := domain.Book{
+		ID:              999,
+		Name:            "Test Book",
+		PublicationDate: "12/12/2020",
+		Genre:           "Mistery",
+	}
+	_, err := repo.Create(b)
+	if err != nil {
+		t.Error("Error while creating a new book")
+	}
+}

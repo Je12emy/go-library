@@ -45,6 +45,15 @@ func (d BookRepositoryDB) FindAll(limit int, offset int) ([]Book, *errs.AppError
 	return books, nil
 }
 
+// Create Inserts a new book into the database
+func (d BookRepositoryDB) Create(book Book) (*Book, *errs.AppError) {
+	result := d.dbClient.Create(&book)
+	if result.Error != nil {
+		return nil, errs.NewUnexpectedError("Error while creating a new book:" + result.Error.Error())
+	}
+	return &book, nil
+}
+
 // NewBookRepositoryDB Returns a new instance of BookRepository takes a gorm db client
 func NewBookRepositoryDB(dbClient *gorm.DB) BookRepositoryDB {
 	return BookRepositoryDB{dbClient}
