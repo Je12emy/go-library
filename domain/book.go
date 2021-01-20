@@ -6,6 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
+// todo: Implement auto-increment keys
+
 type Book struct {
 	ID              uint `gorm:"primaryKey"`
 	Name            string

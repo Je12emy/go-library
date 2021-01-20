@@ -58,6 +58,18 @@ func Test_should_return_a_single_book_by_its_id(t *testing.T) {
 	}
 }
 
+func Test_should_fail_by_not_finding_book_by_its_id(t *testing.T) {
+	// Arrange
+	setup()
+
+	// Act
+	_, err := repo.FindBy(500)
+	// Assert
+	if err == nil {
+		t.Error("Failed while retrieving a non existing book")
+	}
+}
+
 func Test_should_return_all_books(t *testing.T) {
 	setup()
 
@@ -75,13 +87,13 @@ func Test_should_return_all_books(t *testing.T) {
 func Test_should_paginate_books(t *testing.T) {
 	setup()
 
-	booksPage1, err := repo.FindAll(2, 1)
+	booksPage1, err := repo.FindAll(4, 0)
 
 	if err != nil {
 		t.Error("Failed while retrieving page 1 of books")
 	}
 
-	booksPage2, err := repo.FindAll(2, 2)
+	booksPage2, err := repo.FindAll(4, 2)
 
 	if err != nil {
 		t.Error("Failed while retrieving page 2 of books")
