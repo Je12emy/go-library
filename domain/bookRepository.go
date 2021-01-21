@@ -10,8 +10,6 @@ type BookRepositoryDB struct {
 	dbClient *gorm.DB
 }
 
-// todo: check for NOT FOUND error and out of page?
-
 // FindBy Returns a single book by it's id
 func (d BookRepositoryDB) FindBy(id int) (*Book, *errs.AppError) {
 	var book Book
@@ -51,6 +49,23 @@ func (d BookRepositoryDB) Create(book Book) (*Book, *errs.AppError) {
 	if result.Error != nil {
 		return nil, errs.NewUnexpectedError("Error while creating a new book:" + result.Error.Error())
 	}
+	return &book, nil
+}
+
+// Update Updates a book, first it attempts to find the book by it's id and then updates
+func (d BookRepositoryDB) Update(book Book) (*Book, *errs.AppError) {
+	var result *gorm.DB
+	var b Book
+	result = d.dbClient.First(&b, book.ID)
+	if result.RowsAffected == 0 {
+		return nil, errs.NewNotFoundError("Book not found: " + result.Error.Error())
+	}
+
+	result = d.dbClient.Save(&book)
+	if result.RowsAffected == 0 {
+		return nil, errs.NewUnexpectedError("Error while updating book: " + result.Error.Error())
+	}
+
 	return &book, nil
 }
 

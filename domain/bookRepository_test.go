@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"library/app"
 	"library/domain"
+	"library/errs"
 	"testing"
 
 	"gorm.io/gorm"
@@ -20,25 +21,21 @@ func setup() {
 
 func createBooks() {
 	db.Create(&domain.Book{
-		ID:              1,
 		Name:            "Elon Musk",
 		PublicationDate: "20/20/15",
 		Genre:           "Bibliography",
 	})
 	db.Create(&domain.Book{
-		ID:              2,
 		Name:            "The Master Algorithm",
 		PublicationDate: "20/20/15",
 		Genre:           "Science & Technology",
 	})
 	db.Create(&domain.Book{
-		ID:              3,
 		Name:            "Test Book 3",
 		PublicationDate: "20/20/15",
 		Genre:           "Science & Technology",
 	})
 	db.Create(&domain.Book{
-		ID:              4,
 		Name:            "Test Book 4",
 		PublicationDate: "20/20/15",
 		Genre:           "Science & Technology",
@@ -107,7 +104,6 @@ func Test_should_paginate_books(t *testing.T) {
 func Test_should_insert_a_new_book(t *testing.T) {
 	setup()
 	b := domain.Book{
-		ID:              999,
 		Name:            "Test Book",
 		PublicationDate: "12/12/2020",
 		Genre:           "Mistery",
@@ -115,5 +111,57 @@ func Test_should_insert_a_new_book(t *testing.T) {
 	_, err := repo.Create(b)
 	if err != nil {
 		t.Error("Error while creating a new book")
+	}
+}
+
+func Test_should_update_new_book(t *testing.T) {
+	setup()
+	// Arrange
+	b := domain.Book{
+		Name:            "Update book",
+		PublicationDate: "12/12/2020",
+		Genre:           "Mistery",
+	}
+
+	newBook, err := repo.Create(b)
+	if err != nil {
+		t.Error("Error while creating a new book")
+	}
+	id := int(newBook.ID)
+
+	// Act
+	updateBook, _ := repo.FindBy(id)
+	updateBook.Name = "Chaged Name"
+	response, _ := repo.Update(*updateBook)
+
+	// Assert
+	if updateBook.Name != response.Name {
+		t.Error("Failed while updating a newly created book")
+	}
+}
+
+func Test_should_fail_update_by_not_finding_book(t *testing.T) {
+	setup()
+	// Arrange
+	var err *errs.AppError
+
+	b := domain.Book{
+		Name:            "Update book",
+		PublicationDate: "12/12/2020",
+		Genre:           "Mistery",
+	}
+
+	_, err = repo.Create(b)
+	if err != nil {
+		t.Error("Error while creating a new book")
+	}
+
+	// Act
+	b.ID = 9000
+	result, _ := repo.Update(b)
+
+	// Assert
+	if result != nil {
+		t.Error("Failed update, Book should not be found")
 	}
 }

@@ -1,13 +1,13 @@
 package domain
 
 import (
+	"library/errs"
 	"time"
 
 	"gorm.io/gorm"
 )
 
-// todo: Implement auto-increment keys
-
+// Book Domain object for books
 type Book struct {
 	ID              uint `gorm:"primaryKey"`
 	Name            string
@@ -18,7 +18,9 @@ type Book struct {
 	DeletedAt       gorm.DeletedAt
 }
 
+// BookRepository Interface for CRUD operations
 type BookRepository interface {
-	Save(Book) ([]Book, error)
-	FindBy(bookId string) (*Book, error)
+	Save(Book) ([]Book, *errs.AppError)
+	FindBy(bookId string) (*Book, *errs.AppError)
+	FindAll() ([]Book, *errs.AppError)
 }
