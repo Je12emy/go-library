@@ -21,10 +21,13 @@ type Book struct {
 }
 
 // BookRepository Interface for CRUD operations
+//go:generate mockgen -destination=../mocks/domain/mockBookRepository.go -package=domain library/domain BookRepository
 type BookRepository interface {
-	Save(Book) ([]Book, *errs.AppError)
-	FindBy(bookId string) (*Book, *errs.AppError)
-	FindAll() ([]Book, *errs.AppError)
+	Create(Book) (*Book, *errs.AppError)
+	FindBy(bookId int) (*Book, *errs.AppError)
+	FindAll(limit int, offset int) ([]Book, *errs.AppError)
+	Update(Book) (*Book, *errs.AppError)
+	Delete(Book) (*Book, *errs.AppError)
 }
 
 // ToDTO Tranforms the book domain object into DTO
