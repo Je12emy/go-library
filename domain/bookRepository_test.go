@@ -130,6 +130,7 @@ func Test_should_update_new_book(t *testing.T) {
 	id := int(newBook.ID)
 
 	// Act
+	// redundant
 	updateBook, _ := repo.FindBy(id)
 	updateBook.Name = "Chaged Name"
 	response, _ := repo.Update(*updateBook)
@@ -140,7 +141,7 @@ func Test_should_update_new_book(t *testing.T) {
 	}
 }
 
-func Test_should_fail_update_by_not_finding_book(t *testing.T) {
+func Test_should_not_update_by_not_finding_book(t *testing.T) {
 	setup()
 	// Arrange
 	var err *errs.AppError
@@ -163,5 +164,23 @@ func Test_should_fail_update_by_not_finding_book(t *testing.T) {
 	// Assert
 	if result != nil {
 		t.Error("Failed update, Book should not be found")
+	}
+}
+
+func Test_should_delete_book(t *testing.T) {
+	setup()
+
+	b := domain.Book{
+		Name:            "Delete book",
+		PublicationDate: "12/12/2020",
+		Genre:           "Mistery",
+	}
+
+	book, _ := repo.Create(b)
+
+	_, err := repo.Delete(*book)
+
+	if err != nil {
+		t.Error("Failed to delete book")
 	}
 }

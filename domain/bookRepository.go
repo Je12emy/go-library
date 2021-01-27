@@ -24,6 +24,8 @@ func (d BookRepositoryDB) FindBy(id int) (*Book, *errs.AppError) {
 	return &book, nil
 }
 
+// TODO: Implement pagination by default
+
 // FindAll Returns a all the books with pagination, if 0 is passed no limit is imposed.
 func (d BookRepositoryDB) FindAll(limit int, offset int) ([]Book, *errs.AppError) {
 	books := make([]Book, 0)
@@ -64,6 +66,23 @@ func (d BookRepositoryDB) Update(book Book) (*Book, *errs.AppError) {
 	result = d.dbClient.Save(&book)
 	if result.RowsAffected == 0 {
 		return nil, errs.NewUnexpectedError("Error while updating book: " + result.Error.Error())
+	}
+
+	return &book, nil
+}
+
+func (d BookRepositoryDB) Delete(book Book) (*Book, *errs.AppError) {
+	var result *gorm.DB
+	var b Book
+
+	result = d.dbClient.First(&b, book)
+	if result.RowsAffected == 0 {
+		return nil, errs.NewNotFoundError("Book not found: " + result.Error.Error())
+	}
+
+	result = d.dbClient.Delete(&book)
+	if result.RowsAffected == 0 {
+		return nil, errs.NewUnexpectedError("Unexpected error while deleting book: " + result.Error.Error())
 	}
 
 	return &book, nil
