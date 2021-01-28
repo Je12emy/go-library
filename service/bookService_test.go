@@ -130,3 +130,32 @@ func Test_should_update_existing_book(t *testing.T) {
 		t.Error("Test failed since returned if does not match")
 	}
 }
+
+func Test_should_delete_a_single_book(t *testing.T) {
+	// Arrange
+	teardown := setup(t)
+	defer teardown()
+
+	req := NewBookRequest()
+	req.ID = 1
+
+	b := realDomain.Book{
+		ID: req.ID,
+	}
+
+	mockRepo.EXPECT().Delete(b).Return(&b, nil)
+
+	// Act
+	res, err := service.DeleteBook(req)
+
+	// Assert
+
+	if err != nil {
+		t.Error("Failed while deleting book")
+	}
+
+	id, _ := strconv.ParseUint(res.ID, 10, 32)
+	if id != uint64(b.ID) {
+		t.Error("Test failed since returned if does not match")
+	}
+}

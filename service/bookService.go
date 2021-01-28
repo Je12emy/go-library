@@ -11,7 +11,7 @@ type BookService interface {
 	CreateNewBook(dto.BookRequest) (*dto.BookResponse, *errs.AppError)
 	RetrieveBook(dto.BookRequest) (*dto.BookResponse, *errs.AppError)
 	UpdateBook(dto.BookRequest) (*dto.BookResponse, *errs.AppError)
-	// DeleteBook(dto.BookRequest) (*dto.BookResponse, *errs.AppError)
+	DeleteBook(dto.BookRequest) (*dto.BookResponse, *errs.AppError)
 	RetrieveAllBooks() ([]dto.BookResponse, *errs.AppError)
 }
 
@@ -83,6 +83,22 @@ func (d DefaultBookService) UpdateBook(req dto.BookRequest) (*dto.BookResponse, 
 	}
 	res := book.ToDTO()
 	return &res, nil
+}
+
+// DeleteBook Delete a single book
+func (d DefaultBookService) DeleteBook(req dto.BookRequest) (*dto.BookResponse, *errs.AppError) {
+	b := domain.Book{
+		ID: req.ID,
+	}
+
+	book, err := d.repo.Delete(b)
+	if err != nil {
+		return nil, err
+	}
+
+	res := book.ToDTO()
+	return &res, nil
+
 }
 
 // NewBookService Creates a new Default Book Service implementation

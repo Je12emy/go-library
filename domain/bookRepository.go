@@ -75,7 +75,7 @@ func (d BookRepositoryDB) Delete(book Book) (*Book, *errs.AppError) {
 	var result *gorm.DB
 	var b Book
 
-	result = d.dbClient.First(&b, book)
+	result = d.dbClient.First(&b, book.ID)
 	if result.RowsAffected == 0 {
 		return nil, errs.NewNotFoundError("Book not found: " + result.Error.Error())
 	}
