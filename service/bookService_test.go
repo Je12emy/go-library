@@ -98,5 +98,35 @@ func Test_should_find_a_single_book(t *testing.T) {
 	if id != uint64(bookWithID.ID) {
 		t.Error("Test failed while finding book")
 	}
+}
 
+func Test_should_update_existing_book(t *testing.T) {
+	// Arrange
+	teardown := setup(t)
+	defer teardown()
+
+	req := NewBookRequest()
+	req.ID = 1
+
+	b := realDomain.Book{
+		ID:              req.ID,
+		Name:            req.Name,
+		Genre:           req.Genre,
+		PublicationDate: req.PublicationDate,
+	}
+
+	mockRepo.EXPECT().Update(b).Return(&b, nil)
+
+	// Act
+	res, err := service.UpdateBook(req)
+
+	// Assert
+	if err != nil {
+		t.Error("Test failed while updating book")
+	}
+
+	id, _ := strconv.ParseUint(res.ID, 10, 32)
+	if id != uint64(b.ID) {
+		t.Error("Test failed since returned if does not match")
+	}
 }

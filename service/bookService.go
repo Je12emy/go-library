@@ -10,8 +10,8 @@ import (
 type BookService interface {
 	CreateNewBook(dto.BookRequest) (*dto.BookResponse, *errs.AppError)
 	RetrieveBook(dto.BookRequest) (*dto.BookResponse, *errs.AppError)
-	// UpdateBook(*dto.BookRequest) (*dto.BookResponse, *errs.AppError)
-	// DeleteBook(*dto.BookRequest) (*dto.BookResponse, *errs.AppError)
+	UpdateBook(dto.BookRequest) (*dto.BookResponse, *errs.AppError)
+	// DeleteBook(dto.BookRequest) (*dto.BookResponse, *errs.AppError)
 	RetrieveAllBooks() ([]dto.BookResponse, *errs.AppError)
 }
 
@@ -65,6 +65,24 @@ func (d DefaultBookService) RetrieveAllBooks() ([]dto.BookResponse, *errs.AppErr
 		booksResponse = append(booksResponse, b.ToDTO())
 	}
 	return booksResponse, nil
+}
+
+// UpdateBook Updates a book
+func (d DefaultBookService) UpdateBook(req dto.BookRequest) (*dto.BookResponse, *errs.AppError) {
+	b := domain.Book{
+		ID:              req.ID,
+		Name:            req.Name,
+		PublicationDate: req.PublicationDate,
+		Genre:           req.Genre,
+	}
+
+	book, err := d.repo.Update(b)
+
+	if err != nil {
+		return nil, err
+	}
+	res := book.ToDTO()
+	return &res, nil
 }
 
 // NewBookService Creates a new Default Book Service implementation
