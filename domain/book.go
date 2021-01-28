@@ -3,7 +3,6 @@ package domain
 import (
 	"library/dto"
 	"library/errs"
-	"strconv"
 	"time"
 
 	"gorm.io/gorm"
@@ -33,7 +32,7 @@ type BookRepository interface {
 // ToDTO Tranforms the book domain object into DTO
 func (b Book) ToDTO() dto.BookResponse {
 	return dto.BookResponse{
-		ID:              strconv.FormatUint(uint64(b.ID), 10),
+		ID:              b.ID,
 		Name:            b.Name,
 		PublicationDate: b.PublicationDate,
 		Genre:           b.Genre,

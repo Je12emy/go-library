@@ -4,7 +4,6 @@ import (
 	realDomain "library/domain"
 	"library/dto"
 	"library/mocks/domain"
-	"strconv"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -27,6 +26,7 @@ func setup(t *testing.T) func() {
 
 func NewBookRequest() dto.BookRequest {
 	return dto.BookRequest{
+		ID:              1,
 		Name:            "My new Book",
 		PublicationDate: "14/05/20",
 		Genre:           "Terror",
@@ -62,9 +62,7 @@ func Test_should_new_book_response_when_book_is_saved_successfully(t *testing.T)
 		t.Error("Test failed while creating a new book")
 	}
 
-	// TODO: Fix types
-	id, _ := strconv.ParseUint(newBook.ID, 10, 32)
-	if id != uint64(bookWithID.ID) {
+	if newBook.ID != bookWithID.ID {
 		t.Error("Test failed while matching new book id")
 	}
 }
@@ -75,27 +73,23 @@ func Test_should_find_a_single_book(t *testing.T) {
 	defer teardown()
 
 	req := NewBookRequest()
-	req.ID = 1
 
 	book := realDomain.Book{
+		ID:              req.ID,
 		Name:            req.Name,
 		PublicationDate: req.PublicationDate,
 		Genre:           req.Genre,
 	}
 
-	bookWithID := book
-	bookWithID.ID = 1
-
-	mockRepo.EXPECT().FindBy(int(bookWithID.ID)).Return(&bookWithID, nil)
+	mockRepo.EXPECT().FindBy(int(book.ID)).Return(&book, nil)
 	b, err := service.RetrieveBook(req)
 
 	// Act
 	if err != nil {
 		t.Error("Test failed while finding book")
 	}
-	// TODO Fix types
-	id, _ := strconv.ParseUint(b.ID, 10, 32)
-	if id != uint64(bookWithID.ID) {
+
+	if b.ID != book.ID {
 		t.Error("Test failed while finding book")
 	}
 }
@@ -106,7 +100,6 @@ func Test_should_update_existing_book(t *testing.T) {
 	defer teardown()
 
 	req := NewBookRequest()
-	req.ID = 1
 
 	b := realDomain.Book{
 		ID:              req.ID,
@@ -125,8 +118,7 @@ func Test_should_update_existing_book(t *testing.T) {
 		t.Error("Test failed while updating book")
 	}
 
-	id, _ := strconv.ParseUint(res.ID, 10, 32)
-	if id != uint64(b.ID) {
+	if res.ID != b.ID {
 		t.Error("Test failed since returned if does not match")
 	}
 }
@@ -137,7 +129,6 @@ func Test_should_delete_a_single_book(t *testing.T) {
 	defer teardown()
 
 	req := NewBookRequest()
-	req.ID = 1
 
 	b := realDomain.Book{
 		ID: req.ID,
@@ -154,8 +145,7 @@ func Test_should_delete_a_single_book(t *testing.T) {
 		t.Error("Failed while deleting book")
 	}
 
-	id, _ := strconv.ParseUint(res.ID, 10, 32)
-	if id != uint64(b.ID) {
+	if res.ID != b.ID {
 		t.Error("Test failed since returned if does not match")
 	}
 }
