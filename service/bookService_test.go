@@ -25,6 +25,14 @@ func setup(t *testing.T) func() {
 	}
 }
 
+func NewBookRequest() dto.BookRequest {
+	return dto.BookRequest{
+		Name:            "My new Book",
+		PublicationDate: "14/05/20",
+		Genre:           "Terror",
+	}
+}
+
 func Test_should_new_book_response_when_book_is_saved_successfully(t *testing.T) {
 	// Arrange
 	teardown := setup(t)
@@ -57,7 +65,38 @@ func Test_should_new_book_response_when_book_is_saved_successfully(t *testing.T)
 	// TODO: Fix types
 	id, _ := strconv.ParseUint(newBook.ID, 10, 32)
 	if id != uint64(bookWithID.ID) {
-		t.Error("Tested failed while matching new book id")
+		t.Error("Test failed while matching new book id")
+	}
+}
+
+func Test_should_find_a_single_book(t *testing.T) {
+	// Arrange
+	teardown := setup(t)
+	defer teardown()
+
+	req := NewBookRequest()
+	req.ID = 1
+
+	book := realDomain.Book{
+		Name:            req.Name,
+		PublicationDate: req.PublicationDate,
+		Genre:           req.Genre,
+	}
+
+	bookWithID := book
+	bookWithID.ID = 1
+
+	mockRepo.EXPECT().FindBy(int(bookWithID.ID)).Return(&bookWithID, nil)
+	b, err := service.RetrieveBook(req)
+
+	// Act
+	if err != nil {
+		t.Error("Test failed while finding book")
+	}
+	// TODO Fix types
+	id, _ := strconv.ParseUint(b.ID, 10, 32)
+	if id != uint64(bookWithID.ID) {
+		t.Error("Test failed while finding book")
 	}
 
 }
