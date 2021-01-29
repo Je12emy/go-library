@@ -7,6 +7,7 @@ import (
 )
 
 // BookService Interface for the Book Service
+//go:generate mockgen -destination=../mocks/service/mockBookService.go -package=service library/service BookService
 type BookService interface {
 	CreateNewBook(dto.BookRequest) (*dto.BookResponse, *errs.AppError)
 	RetrieveBook(dto.BookRequest) (*dto.BookResponse, *errs.AppError)
