@@ -103,3 +103,22 @@ func (b BookHandler) DeleteBook(w http.ResponseWriter, r *http.Request) {
 		WriteResponse(w, http.StatusOK, book)
 	}
 }
+
+// FindAllBooks Returns a paginated array of books
+func (b BookHandler) FindAllBooks(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("page")
+
+	ID, err := strconv.ParseInt(query, 10, 32)
+
+	if err != nil {
+		WriteResponse(w, http.StatusUnprocessableEntity, "The id you provided is not valid")
+	} else {
+		res, appErr := b.service.RetrieveAllBooks(int(ID))
+
+		if appErr != nil {
+			WriteResponse(w, appErr.Code, appErr.Message)
+		} else {
+			WriteResponse(w, http.StatusOK, res)
+		}
+	}
+}

@@ -65,18 +65,18 @@ func (mr *MockBookRepositoryMockRecorder) Delete(arg0 interface{}) *gomock.Call 
 }
 
 // FindAll mocks base method
-func (m *MockBookRepository) FindAll(arg0, arg1 int) ([]domain.Book, *errs.AppError) {
+func (m *MockBookRepository) FindAll(arg0 int) ([]domain.Book, *errs.AppError) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAll", arg0, arg1)
+	ret := m.ctrl.Call(m, "FindAll", arg0)
 	ret0, _ := ret[0].([]domain.Book)
 	ret1, _ := ret[1].(*errs.AppError)
 	return ret0, ret1
 }
 
 // FindAll indicates an expected call of FindAll
-func (mr *MockBookRepositoryMockRecorder) FindAll(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockBookRepositoryMockRecorder) FindAll(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockBookRepository)(nil).FindAll), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockBookRepository)(nil).FindAll), arg0)
 }
 
 // FindBy mocks base method
