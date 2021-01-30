@@ -82,3 +82,24 @@ func (b BookHandler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+// DeleteBook Deletebook hanlder
+func (b BookHandler) DeleteBook(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	bookID := vars["book_id"]
+	var request dto.BookRequest
+
+	ID, err := strconv.ParseUint(bookID, 10, 32)
+	if err != nil {
+		WriteResponse(w, http.StatusUnprocessableEntity, "The id you provided is not valid")
+	}
+	request.ID = uint(ID)
+
+	book, appErr := b.service.DeleteBook(request)
+	if appErr != nil {
+		WriteResponse(w, appErr.Code, appErr.Message)
+	} else {
+		WriteResponse(w, http.StatusOK, book)
+	}
+}

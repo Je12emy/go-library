@@ -56,6 +56,10 @@ func Start() {
 		Methods(http.MethodPut).
 		Name("UpdateBook")
 
+	router.HandleFunc("/books/{book_id:[0-9]+}", bh.DeleteBook).
+		Methods(http.MethodDelete).
+		Name("DeleteBook")
+
 	serverAddress := os.Getenv("SERVER_ADDRESS")
 	serverPort := os.Getenv("SERVER_PORT")
 

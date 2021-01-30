@@ -80,12 +80,12 @@ func (d BookRepositoryDB) Delete(book Book) (*Book, *errs.AppError) {
 		return nil, errs.NewNotFoundError("Book not found: " + result.Error.Error())
 	}
 
-	result = d.dbClient.Delete(&book)
+	result = d.dbClient.Delete(&b)
 	if result.RowsAffected == 0 {
 		return nil, errs.NewUnexpectedError("Unexpected error while deleting book: " + result.Error.Error())
 	}
 
-	return &book, nil
+	return &b, nil
 }
 
 // NewBookRepositoryDB Returns a new instance of BookRepository takes a gorm db client
