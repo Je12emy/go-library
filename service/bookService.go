@@ -1,9 +1,11 @@
 package service
 
 import (
+	"fmt"
 	"library/domain"
 	"library/dto"
 	"library/errs"
+	"os"
 )
 
 // BookService Interface for the Book Service
@@ -13,7 +15,7 @@ type BookService interface {
 	RetrieveBook(dto.BookRequest) (*dto.BookResponse, *errs.AppError)
 	UpdateBook(dto.BookRequest) (*dto.BookResponse, *errs.AppError)
 	DeleteBook(dto.BookRequest) (*dto.BookResponse, *errs.AppError)
-	RetrieveAllBooks() ([]dto.BookResponse, *errs.AppError)
+	RetrieveAllBooks(page int) (*dto.BookPaginationResponse, *errs.AppError)
 }
 
 // DefaultBookService Struct for the default book service
@@ -52,20 +54,52 @@ func (d DefaultBookService) RetrieveBook(req dto.BookRequest) (*dto.BookResponse
 	return &response, nil
 }
 
+func hasNextPage(books []domain.Book) bool {
+	return len(books) == 0
+}
+
 // RetrieveAllBooks Returns all books in the library
-func (d DefaultBookService) RetrieveAllBooks() ([]dto.BookResponse, *errs.AppError) {
-	books, err := d.repo.FindAll(0, 10)
+func (d DefaultBookService) RetrieveAllBooks(page int) (*dto.BookPaginationResponse, *errs.AppError) {
+
+	// Get env server address
+	serverAddress := os.Getenv("SERVER_ADDRESS")
+	serverPort := os.Getenv("SERVER_PORT")
+
+	var response dto.BookPaginationResponse
+	var pageInfo dto.PaginationInfo
+
+	books, err := d.repo.FindAll(page)
 
 	if err != nil {
 		return nil, err
 	}
 
+	if page > 1 {
+		pageInfo.PreviousPage = fmt.Sprintf("%v:%v/books?page=%v", serverAddress, serverPort, page-1)
+	} else {
+		pageInfo.PreviousPage = ""
+	}
+
+	nextBooksPage, err := d.repo.FindAll(page + 1)
+
+	if hasNextPage(nextBooksPage) {
+		pageInfo.NextPage = ""
+	} else {
+		pageInfo.NextPage = fmt.Sprintf("%v:%v/books?page=%v", serverAddress, serverPort, page+1)
+	}
+
+	response.PageInfo = pageInfo
+
 	var booksResponse []dto.BookResponse
+
 	// for each loop
 	for _, b := range books {
 		booksResponse = append(booksResponse, b.ToDTO())
 	}
-	return booksResponse, nil
+
+	response.Book = booksResponse
+
+	return &response, nil
 }
 
 // UpdateBook Updates a book

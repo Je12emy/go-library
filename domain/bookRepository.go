@@ -27,14 +27,19 @@ func (d BookRepositoryDB) FindBy(id int) (*Book, *errs.AppError) {
 // TODO: Implement pagination by default
 
 // FindAll Returns a all the books with pagination, if 0 is passed no limit is imposed.
-func (d BookRepositoryDB) FindAll(limit int, offset int) ([]Book, *errs.AppError) {
-	books := make([]Book, 0)
-	var result *gorm.DB
-	if limit == 0 && offset == 0 {
-		result = d.dbClient.Find(&books)
-	} else {
-		result = d.dbClient.Offset(offset).Limit(limit).Find(&books)
+func (d BookRepositoryDB) FindAll(page int) ([]Book, *errs.AppError) {
+
+	pagesize := 25
+
+	if page == 0 {
+		page = 1
 	}
+
+	books := make([]Book, 0)
+
+	offset := (page - 1) * pagesize
+
+	result := d.dbClient.Offset(offset).Limit(pagesize).Find(&books)
 
 	if result.Error != nil {
 		return nil, errs.NewUnexpectedError("Error while accesing database")

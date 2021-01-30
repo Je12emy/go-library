@@ -67,36 +67,30 @@ func Test_should_fail_by_not_finding_book_by_its_id(t *testing.T) {
 	}
 }
 
-func Test_should_return_all_books(t *testing.T) {
+// func Test_should_return_all_books(t *testing.T) {
+// 	setup()
+
+// 	books, err := repo.FindAll(0, 0)
+
+// 	if err != nil {
+// 		t.Error("Failed while retrieving all books")
+// 	}
+
+// 	if len(books) < 1 {
+// 		t.Error("Filed while retrieving the list of all books")
+// 	}
+// }
+
+func Test_should_return_books(t *testing.T) {
 	setup()
 
-	books, err := repo.FindAll(0, 0)
+	books, err := repo.FindAll(1)
 
 	if err != nil {
-		t.Error("Failed while retrieving all books")
+		t.Error("Failed while retrieving page of books")
 	}
 
-	if len(books) < 1 {
-		t.Error("Filed while retrieving the list of all books")
-	}
-}
-
-func Test_should_paginate_books(t *testing.T) {
-	setup()
-
-	booksPage1, err := repo.FindAll(4, 0)
-
-	if err != nil {
-		t.Error("Failed while retrieving page 1 of books")
-	}
-
-	booksPage2, err := repo.FindAll(4, 2)
-
-	if err != nil {
-		t.Error("Failed while retrieving page 2 of books")
-	}
-
-	if booksPage1[0].Name == booksPage2[0].Name {
+	if len(books) == 0 {
 		t.Error("Failed while paginating results")
 	}
 }

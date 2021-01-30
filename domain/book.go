@@ -24,7 +24,7 @@ type Book struct {
 type BookRepository interface {
 	Create(Book) (*Book, *errs.AppError)
 	FindBy(bookId int) (*Book, *errs.AppError)
-	FindAll(limit int, offset int) ([]Book, *errs.AppError)
+	FindAll(page int) ([]Book, *errs.AppError)
 	Update(Book) (*Book, *errs.AppError)
 	Delete(Book) (*Book, *errs.AppError)
 }

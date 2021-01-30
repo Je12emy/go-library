@@ -60,6 +60,10 @@ func Start() {
 		Methods(http.MethodDelete).
 		Name("DeleteBook")
 
+	router.HandleFunc("/books", bh.FindAllBooks).
+		Methods(http.MethodGet).
+		Name("FindAllBooks")
+
 	serverAddress := os.Getenv("SERVER_ADDRESS")
 	serverPort := os.Getenv("SERVER_PORT")
 

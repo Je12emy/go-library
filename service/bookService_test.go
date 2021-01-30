@@ -5,6 +5,7 @@ import (
 	"library/dto"
 	"library/mocks/domain"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 )
@@ -30,6 +31,58 @@ func NewBookRequest() dto.BookRequest {
 		Name:            "My new Book",
 		PublicationDate: "14/05/20",
 		Genre:           "Terror",
+	}
+}
+
+func newBookResponse() []dto.BookResponse {
+	return []dto.BookResponse{
+		{
+			ID:              1,
+			Name:            "Book 1",
+			PublicationDate: "14/05/20",
+			Genre:           "Terror",
+		},
+		{
+			ID:              2,
+			Name:            "Book 2",
+			PublicationDate: "14/05/20",
+			Genre:           "Comedy",
+		},
+		{
+			ID:              3,
+			Name:            "Book 3",
+			PublicationDate: "14/05/20",
+			Genre:           "Parody",
+		},
+	}
+}
+
+func newBookSlice() []realDomain.Book {
+	return []realDomain.Book{
+		{
+			ID:              1,
+			Name:            "Book 1",
+			PublicationDate: "14/05/20",
+			Genre:           "Terror",
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+		{
+			ID:              2,
+			Name:            "Book 2",
+			PublicationDate: "14/05/20",
+			Genre:           "Comedy",
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+		{
+			ID:              3,
+			Name:            "Book 3",
+			PublicationDate: "14/05/20",
+			Genre:           "Parody",
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
 	}
 }
 
@@ -147,5 +200,29 @@ func Test_should_delete_a_single_book(t *testing.T) {
 
 	if res.ID != b.ID {
 		t.Error("Test failed since returned if does not match")
+	}
+}
+
+func Test_should_all_books(t *testing.T) {
+	// Arrange
+	teardown := setup(t)
+	defer teardown()
+
+	var pageResponse dto.BookPaginationResponse
+
+	pageResponse.PageInfo.NextPage = "localhost:8000/books?page=1"
+	pageResponse.PageInfo.PreviousPage = ""
+
+	pageResponse.Book = newBookResponse()
+
+	mockRepo.EXPECT().FindAll(1).Return(newBookSlice(), nil)
+	mockRepo.EXPECT().FindAll(2).Return(newBookSlice(), nil)
+
+	// Act
+	_, err := service.RetrieveAllBooks(1)
+
+	// Assert
+	if err != nil {
+		t.Error("Failed while retrieving all books")
 	}
 }
