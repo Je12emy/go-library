@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"library/logger"
+	"library/service"
 	"log"
 	"net/http"
 	"os"
@@ -37,10 +38,15 @@ func Start() {
 
 	// Create a new gorilla multiplexer
 	router := mux.NewRouter()
+
+	// Wire up the app
+	bookRepo := domain.NewBookRepositoryDB(GetDBClient())
+	bh := BookHandler{service.NewBookService(bookRepo)}
+
 	// db := GetDBClient()
-	router.HandleFunc("/books", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Hello World")
-	})
+	router.HandleFunc("/books", bh.NewBook).
+		Methods(http.MethodPost).
+		Name("CreateBook")
 
 	serverAddress := os.Getenv("SERVER_ADDRESS")
 	serverPort := os.Getenv("SERVER_PORT")
