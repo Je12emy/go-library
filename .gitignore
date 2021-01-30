@@ -1,3 +1,5 @@
 .env
-.db
-.test
+*.db
+*.test
+__debug_bin
+library.db

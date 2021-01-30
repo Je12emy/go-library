@@ -48,6 +48,14 @@ func Start() {
 		Methods(http.MethodPost).
 		Name("CreateBook")
 
+	router.HandleFunc("/books/{book_id:[0-9]+}", bh.FindBook).
+		Methods(http.MethodGet).
+		Name("FindSingleBook")
+
+	router.HandleFunc("/books/{book_id:[0-9]+}", bh.UpdateBook).
+		Methods(http.MethodPut).
+		Name("UpdateBook")
+
 	serverAddress := os.Getenv("SERVER_ADDRESS")
 	serverPort := os.Getenv("SERVER_PORT")
 
