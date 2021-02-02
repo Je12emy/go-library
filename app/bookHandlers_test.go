@@ -22,8 +22,9 @@ func setup(t *testing.T) func() {
 	mockService = service.NewMockBookService(ctlr)
 	bh = BookHandler{mockService}
 	router = mux.NewRouter()
-	router.HandleFunc("/books/{book_id:[0-9]+}", bh.FindBook)
-	router.HandleFunc("/books", bh.NewBook)
+	router.HandleFunc("/books/{book_id:[0-9]+}", bh.FindBook).Methods(http.MethodGet)
+	router.HandleFunc("/books", bh.NewBook).Methods(http.MethodPost)
+	router.HandleFunc("/books/{book_id:[0-9]+}", bh.UpdateBook).Methods(http.MethodPut)
 
 	return func() {
 		router = nil
@@ -96,6 +97,48 @@ func Test_should_return_a_created_book_with_status_200_ok(t *testing.T) {
 	router.ServeHTTP(recorder, request)
 	// Assert
 	if recorder.Code != http.StatusCreated {
+		t.Error("Error while validating status code")
+	}
+}
+
+func Test_should_return_the_updated_book_with_status_200_ok(t *testing.T) {
+	// Arrange
+	teardown := setup(t)
+	defer teardown()
+
+	bookResponse := dto.BookResponse{
+		ID:              1,
+		Name:            "Book 1",
+		PublicationDate: "14/05/2020",
+		Genre:           "Comedy",
+	}
+
+	bookRequest := dto.BookRequest{
+		ID:              1,
+		Name:            "Book 1",
+		PublicationDate: "14/05/2020",
+		Genre:           "Comedy",
+	}
+
+	message := map[string]interface{}{
+		"book_name":        "Book 1",
+		"publication_date": "14/05/2020",
+		"book_genre":       "Comedy",
+	}
+
+	bytesRepresentation, err := json.Marshal(message)
+	if err != nil {
+		t.Error("Error while creating request body")
+	}
+	mockService.EXPECT().UpdateBook(bookRequest).Return(&bookResponse, nil)
+	request, _ := http.NewRequest(http.MethodPut, "/books/1", bytes.NewBuffer(bytesRepresentation))
+
+	// Act
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	// Assert
+	if recorder.Code != http.StatusOK {
 		t.Error("Error while validating status code")
 	}
 }
