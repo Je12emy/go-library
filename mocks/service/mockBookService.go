@@ -65,18 +65,18 @@ func (mr *MockBookServiceMockRecorder) DeleteBook(arg0 interface{}) *gomock.Call
 }
 
 // RetrieveAllBooks mocks base method
-func (m *MockBookService) RetrieveAllBooks() ([]dto.BookResponse, *errs.AppError) {
+func (m *MockBookService) RetrieveAllBooks(arg0 int) (*dto.BookPaginationResponse, *errs.AppError) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RetrieveAllBooks")
-	ret0, _ := ret[0].([]dto.BookResponse)
+	ret := m.ctrl.Call(m, "RetrieveAllBooks", arg0)
+	ret0, _ := ret[0].(*dto.BookPaginationResponse)
 	ret1, _ := ret[1].(*errs.AppError)
 	return ret0, ret1
 }
 
 // RetrieveAllBooks indicates an expected call of RetrieveAllBooks
-func (mr *MockBookServiceMockRecorder) RetrieveAllBooks() *gomock.Call {
+func (mr *MockBookServiceMockRecorder) RetrieveAllBooks(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RetrieveAllBooks", reflect.TypeOf((*MockBookService)(nil).RetrieveAllBooks))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RetrieveAllBooks", reflect.TypeOf((*MockBookService)(nil).RetrieveAllBooks), arg0)
 }
 
 // RetrieveBook mocks base method
